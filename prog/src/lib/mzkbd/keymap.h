@@ -18,6 +18,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "mzkbd_keycode.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,7 +31,7 @@ extern "C" {
  */
 
 /** user provided function taht returns keycode from column and row */
-extern uint8_t keymap_get_keycode(int column, int row);
+extern kbdkey_t keymap_get_keycode(int column, int row);
 
 #ifdef __cplusplus
 }

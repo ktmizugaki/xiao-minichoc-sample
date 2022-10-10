@@ -17,10 +17,15 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <kbdconfig.h>
-
-#define KEYCODES_SIZE   6
+#include "keycode.h"
+#include "mzkbd_keycode.h"
+#include "hid.h"
+#include "matrix.h"
+#include "keyboard.h"
+#include "mouse.h"
+#include "mediakey.h"
+#include "layer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,28 +33,39 @@ extern "C" {
 
 /**
  * @file
- * This header contains declarations of usb hid functions.
- * User must implement these functions.
+ * Include headers for mzkbd.
  */
 
-/** user provided function to initialize hid module. */
-extern void hid_init(void);
-/** user provided function to prepare for report.
- * this function will be called after matrix_task. */
-extern void hid_task(void);
-
-/** user provided function to send keyboard report. */
-extern void keyboard_report(uint8_t modifier, uint8_t keycode[KEYCODES_SIZE]);
-
-/** user provided function to send mouse report. */
-extern void mouse_report(uint8_t buttons,
-    int8_t x, int8_t y, int8_t vertical, int8_t horizontal);
-
+static inline void mzkbd_init(void) {
+    hid_init();
+    matrix_init();
+    keyboard_init();
+#if USE_MOUSE
+    mouse_init();
+#endif
 #if USE_MEDIAKEY
-/** user provided function to send media key report.
- * required only if USE_MEDIAKEY is 1. */
-extern void mediakey_report(uint16_t mediakey);
-#endif /* USE_MEDIAKEY */
+    mediakey_init();
+#endif
+#if USE_LAYER
+    layer_init();
+#endif
+}
+
+static inline void mzkbd_task(void) {
+    matrix_task();
+    hid_task();
+    keyboard_task();
+#if USE_MOUSE
+    mouse_task();
+#endif
+#if USE_MEDIAKEY
+    mediakey_task();
+#endif
+#if USE_LAYER
+    layer_task();
+#endif
+}
+
 
 #ifdef __cplusplus
 }

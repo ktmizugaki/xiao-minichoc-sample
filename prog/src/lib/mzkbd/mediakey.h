@@ -17,17 +17,30 @@
 
 #pragma once
 
-#include <sam.h>
+#include <kbdconfig.h>
 
-#define RID_KEYBOARD    1
-#define RID_MOUSE       2
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define NUM_PINS        5
-#define PIN_IDS         PIN_PA09, PIN_PB08, PIN_PB09, PIN_PA07, PIN_PA05
-#define PIN_ANALOG      PIN_PA11
+#if USE_MEDIAKEY
 
-#define ANALOG_KEY  0xDF
+/**
+ * @file
+ * Handle media key changes and send report.
+ * USE_MEDIAKEY must be defined to 1 to use mediakey functions.
+ */
 
-#define ANALOGS 2
-#define ANALOG_MOUSE_X  1
-#define ANALOG_MOUSE_Y  ~0
+/** initializes internal media key state. */
+extern void mediakey_init(void);
+/** handles media key changes.
+ * also sends media key report if there is any change.
+ * call this function after matrix_task().
+ */
+extern void mediakey_task(void);
+
+#endif /* USE_MEDIAKEY */
+
+#ifdef __cplusplus
+}
+#endif

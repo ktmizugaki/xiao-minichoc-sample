@@ -22,6 +22,7 @@
 #include "keycode.h"
 #include "hid.h"
 
+static uint8_t s_current_modifiers;
 static uint8_t s_active_keycodes[KEYCODES_SIZE];
 
 static int keyboard_press_key(uint8_t key)
@@ -57,6 +58,7 @@ static int keyboard_release_key(uint8_t key)
 void keyboard_init(void)
 {
     int i;
+    s_current_modifiers = 0;
     for (i = 0; i < KEYCODES_SIZE; i++) {
         s_active_keycodes[i] = 0;
     }
@@ -69,16 +71,24 @@ void keyboard_task(void)
     const matrix_change_t *changes;
     changes = matrix_get_changes(&num_change);
     for (i = 0; i < num_change; i++) {
-        uint8_t keycode = changes[i].keycode;
+        kbdkey_t keycode = changes[i].keycode;
         if (IS_KEY(keycode)) {
             if (changes[i].state) {
-                update |= keyboard_press_key(keycode);
+                update |= keyboard_press_key((uint8_t)keycode);
             } else {
-                update |= keyboard_release_key(keycode);
+                update |= keyboard_release_key((uint8_t)keycode);
             }
+        } else if (IS_MOD(keycode)) {
+            uint8_t old_modifiers = s_current_modifiers;
+            if (changes[i].state) {
+                s_current_modifiers |= MOD_BIT(keycode);
+            } else {
+                s_current_modifiers &= ~MOD_BIT(keycode);
+            }
+            update |= old_modifiers^s_current_modifiers;
         }
     }
     if (update & 0xff) {
-        keyboard_report(0, s_active_keycodes);
+        keyboard_report(s_current_modifiers, s_active_keycodes);
     }
 }

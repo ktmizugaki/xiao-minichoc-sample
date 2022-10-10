@@ -23,6 +23,22 @@
 #include "keycode.h"
 #include "hid.h"
 
+#if defined(ANALOG_MOUSE_X) || defined(ANALOG_MOUSE_Y)
+# if !USE_ANALOG
+#  error USE_ANALOG must be set to use ANALOG_MOUSE_X/Y
+#  undef ANALOG_MOUSE_X
+#  undef ANALOG_MOUSE_Y
+# endif
+#endif
+
+#if defined(ANALOG_MOUSE_X) || defined(ANALOG_MOUSE_Y)
+#define ANALOG_MOUSE 1
+#endif
+
+#ifndef ANALOG_MOUSE
+#define ANALOG_MOUSE 0
+#endif
+
 #ifndef MOUSE_THRES
 #define MOUSE_THRES 200
 #endif
@@ -40,6 +56,8 @@ static int32_t s_acc_mouse_y;
 #endif
 #if defined(ANALOG_MOUSE_X) || defined(ANALOG_MOUSE_Y)
 static int s_mouse_repeat;
+#else
+static const int s_mouse_repeat = 0;
 #endif
 static int s_wheel_repeat;
 
@@ -81,15 +99,15 @@ static int mouse_process_changes(void)
     const matrix_change_t *changes;
     changes = matrix_get_changes(&num_change);
     for (i = 0; i < num_change; i++) {
-        uint8_t keycode = changes[i].keycode;
+        kbdkey_t keycode = changes[i].keycode;
         if (IS_MOUSEKEY(keycode)) {
-            update |= mouse_process_key(keycode, changes[i].state);
+            update |= mouse_process_key((uint8_t)keycode, changes[i].state);
         }
     }
     return update;
 }
 
-#if defined(ANALOG_MOUSE_X) || defined(ANALOG_MOUSE_Y)
+#if ANALOG_MOUSE
 static int mouse_process_raw(int val)
 {
     static const int ACCEL = 1100 - MOUSE_THRES;
@@ -112,7 +130,11 @@ static int mouse_process_analog(int analog_id, int repeat, int32_t *acc, int8_t 
 {
     static const int MOUSE_DIV = 640;
     int raw, processed, abs_processed;
-    raw = (int)matrix_get_analog(analog_id) - 2048;
+    raw = matrix_get_analog(analog_id);
+    if (raw < 0) {
+        *move = 0;
+    }
+    raw -= 2048;
     processed = mouse_process_raw(raw);
     if (processed == 0) {
         *move = 0;
@@ -141,7 +163,7 @@ static int mouse_process_analog(int analog_id, int repeat, int32_t *acc, int8_t 
         return 0;
     }
 }
-#endif
+#endif /* ANALOG_MOUSE */
 
 static int mouse_process_digital(uint8_t dec_key, uint8_t inc_key, int repeat, int8_t *move)
 {

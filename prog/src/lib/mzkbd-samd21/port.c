@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <sam.h>
 
-#include "port.h"
+#include "../mzkbd/port.h"
 
 void port_configure(uint8_t pin, uint8_t portfunc)
 {

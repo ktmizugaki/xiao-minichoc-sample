@@ -20,36 +20,39 @@
 #include <stdint.h>
 #include <kbdconfig.h>
 
-#define KEYCODES_SIZE   6
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
  * @file
- * This header contains declarations of usb hid functions.
- * User must implement these functions.
+ * Handle layer keys.
+ * USE_LAYER must be set to use layers.
  */
 
-/** user provided function to initialize hid module. */
-extern void hid_init(void);
-/** user provided function to prepare for report.
- * this function will be called after matrix_task. */
-extern void hid_task(void);
+#if USE_LAYER
 
-/** user provided function to send keyboard report. */
-extern void keyboard_report(uint8_t modifier, uint8_t keycode[KEYCODES_SIZE]);
+/** maximum number of layers */
+#define LAYER_MAX   32
 
-/** user provided function to send mouse report. */
-extern void mouse_report(uint8_t buttons,
-    int8_t x, int8_t y, int8_t vertical, int8_t horizontal);
+/** initializes internal layer state. */
+extern void layer_init(void);
+/** handles layer key.
+ * call this function after matrix_task().
+ */
+extern void layer_task(void);
 
-#if USE_MEDIAKEY
-/** user provided function to send media key report.
- * required only if USE_MEDIAKEY is 1. */
-extern void mediakey_report(uint16_t mediakey);
-#endif /* USE_MEDIAKEY */
+/** set current layer. */
+extern void layer_set(uint8_t layer);
+/** return previous layer. may be same as current layer */
+extern uint8_t layer_previous(void);
+/** return current layer. */
+extern uint8_t layer_current(void);
+/** obtain current layer and check updates.
+ * return 1 if layer was updated, return 0 otherwise. */
+extern int layer_obtain_check(uint8_t *layer);
+
+#endif /* USE_LAYER */
 
 #ifdef __cplusplus
 }

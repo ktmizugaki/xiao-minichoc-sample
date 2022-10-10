@@ -18,6 +18,8 @@
 #pragma once
 
 #include <stdint.h>
+#include <kbdconfig.h>
+#include "mzkbd_keycode.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +35,7 @@ typedef struct matrix_change {
     uint8_t column;     /**< column of key. */
     uint8_t row;        /**< row of key. */
     uint8_t state;      /**< 0 indicates key is released, 1 indicates key is pressed. */
-    uint8_t keycode;    /**< keycode of key. */
+    kbdkey_t keycode;   /**< value of key. */
 } matrix_change_t;
 
 /** initializes internal state of key matrix and io pins. */
@@ -48,8 +50,10 @@ extern const matrix_change_t* matrix_get_changes(int *num_change);
  * 0 indicates key is released, 1 indicates key is pressed.
  */
 extern int matrix_get(int column, int row);
+#if USE_ANALOG
 /** returns last analog value of analog_id at last matrix_task(). */
 extern int matrix_get_analog(int analog_id);
+#endif
 
 #ifdef __cplusplus
 }

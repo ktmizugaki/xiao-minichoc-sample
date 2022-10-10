@@ -16,26 +16,18 @@
  */
 
 #include <stdbool.h>
-#include "src/hid_impl.h"
-#include "src/lib/mzkbd/matrix.h"
-#include "src/lib/mzkbd/keyboard.h"
-#include "src/lib/mzkbd/mouse.h"
+#include <kbdconfig.h>
+#include "src/lib/mzkbd/mzkbd.h"
 #include <Arduino.h>
 
 void setup(void)
 {
     Serial.begin(115200);
-    hid_impl_init();
-    matrix_init();
-    keyboard_init();
-    mouse_init();
+    mzkbd_init();
 }
 
 void loop(void)
 {
-    hid_impl_task();
-    matrix_task();
-    keyboard_task();
-    mouse_task();
+    mzkbd_task();
     delay(10);
 }
