@@ -59,7 +59,7 @@ typedef struct keystate {
 extern uint8_t g_key_matrix[NUM_PINS][NUM_PINS-1];
 static keystate_t s_values[NUM_PINS][NUM_PINS-1];
 #if USE_ANALOG
-static uint16_t s_analogs[ANALOGS];
+static int s_analogs[ANALOGS];
 #endif
 
 static int s_num_change;
@@ -84,7 +84,7 @@ void matrix_init(void)
     }
 #if USE_ANALOG
     for (analog_id = 0; analog_id < ANALOGS; analog_id++) {
-        s_analogs[analog_id] = 0;
+        s_analogs[analog_id] = -1;
     }
 #endif
 }

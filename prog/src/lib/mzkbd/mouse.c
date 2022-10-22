@@ -133,6 +133,7 @@ static int mouse_process_analog(int analog_id, int repeat, int32_t *acc, int8_t 
     raw = matrix_get_analog(analog_id);
     if (raw < 0) {
         *move = 0;
+        return 0;
     }
     raw -= 2048;
     processed = mouse_process_raw(raw);
