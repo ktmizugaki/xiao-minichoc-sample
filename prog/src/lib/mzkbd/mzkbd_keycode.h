@@ -65,14 +65,14 @@ typedef uint16_t kbdkey_t;
 #define IS_ANALOG(key)      IS_EXKT((key), EXKT_ANALOG)
 
 /* change to specified layer */
-#define TO(layer)   (EXKT_LAYER|LAYER_TOGGLE|((layer)&&LAYER_MASK))
+#define TO(layer)   (EXKT_LAYER|LAYER_TOGGLE|((layer)&LAYER_MASK))
 /* change to specified layer while key is down */
-#define MO(layer)   (EXKT_LAYER|LAYER_MOMENTARY|((layer)&&LAYER_MASK))
+#define MO(layer)   (EXKT_LAYER|LAYER_MOMENTARY|((layer)&LAYER_MASK))
 
 /* key is analog */
-#define AL(id)      (EXKT_ANALOG|((id)&&ANALOG_ID_MASK))
+#define AL(id)      (EXKT_ANALOG|((id)&ANALOG_ID_MASK))
 /* key is analog but value is inverted */
-#define AN(id)      (EXKT_ANALOG|ANALOG_INVERT|((id)&&ANALOG_ID_MASK))
+#define AN(id)      (EXKT_ANALOG|ANALOG_INVERT|((id)&ANALOG_ID_MASK))
 
 #ifdef __cplusplus
 }
